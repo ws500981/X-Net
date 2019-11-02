@@ -11,15 +11,15 @@ from matplotlib import pyplot as plt
 def train_data_generator(patient_indexes, h5_file_path, batch_size):
     i = 0
     file = h5py.File(h5_file_path, 'r')
-    imgs = file['data']
+    imgs = file['lesion']
     labels = file['label']
 
     # 输入的是病人的index，转换成切片的index
     slice_indexes = []
-    for patient_index in patient_indexes: #229 patients, patient_indexes is an array [0,1,2,...228]
+    for patient_index in patient_indexes: #229 patients, patient_indexes is an array [0,1,2,...238]
         for slice_index in range(189): #each patient has 189 slices (0,1,2,...188)
-            slice_indexes.append(patient_index * 189 + slice_index) #put each slice number into slice_indexes, all together 228*189 slices
-    num_of_slices = len(slice_indexes) #228*189 slices in total
+            slice_indexes.append(patient_index * 189 + slice_index) #put each slice number into slice_indexes, all together 238*189 slices
+    num_of_slices = len(slice_indexes) #238*189 slices in total
     print(num_of_slices)
 
     while True:
@@ -38,6 +38,7 @@ def train_data_generator(patient_indexes, h5_file_path, batch_size):
         yield np.expand_dims(np.array(batch_img), 3), np.expand_dims(np.array(batch_label), 3)
         #The yield statement suspends function’s execution and sends a value back to caller, but retains enough state to enable function to resume where it is left off. When resumed, the function continues execution immediately after the last yield run.
 
+
 def create_train_date_generator(patient_indexes, h5_file_path, batch_size):
     return train_data_generator(patient_indexes, h5_file_path, batch_size)
 
@@ -45,7 +46,7 @@ def create_train_date_generator(patient_indexes, h5_file_path, batch_size):
 def val_data_generator(patient_indexes, h5_file_path, batch_size=1):
     i = 0
     file = h5py.File(h5_file_path, 'r')
-    imgs = file['data']
+    imgs = file['lesion']
     labels = file['label']
 
     # 输入的是病人的index，转换成切片的index

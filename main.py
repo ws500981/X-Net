@@ -13,7 +13,7 @@ from loss import get_loss, dice
 from data import create_train_date_generator, create_val_date_generator
 
 
-data_file_path = '/home/siat/data/ATLAS_h5/ATLAS.h5'
+data_file_path = '/home/wwu009/Project/hd5/file.h5'
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
@@ -81,17 +81,17 @@ def train(fold, train_patient_indexes, val_patient_indexes):
 
 def main():
     # prepare indexes of patients for training and validation, respectively
-    num_patients = 229
-    patients_indexes = np.array([i for i in range(num_patients)]) #patients_indexes is a 1d array containing 229 numbers (0-228)
+    num_patients = 239
+    patients_indexes = np.array([i for i in range(num_patients)]) #patients_indexes is a 1d array containing 239 numbers (0-238)
     kf = KFold(n_splits=num_folds, shuffle=False) #num_folds = 5
     #K-Folds cross-validator. Provides train/test indices to split data in train/test sets. Split dataset into k consecutive folds (without shuffling by default). Each fold is then used once as a validation while the k - 1 remaining folds form the training set.
 
     # train, and record the scores of each fold
     folds_score = []
-    for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)):
+    for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)): 
         #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 fold, each fold contains a pair of ndarray of train and validation indices 
-        fold_mean_score = train(fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes)
-        folds_score.append(fold_mean_score)#put mean score for each of the 5 folds in one list
+        fold_mean_score = train(fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
+        folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
 
     # calculate average score
     print('Final score from ', num_folds, ' folds cross validation:')
