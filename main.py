@@ -22,7 +22,7 @@ num_folds = 5
 
 def train(fold, train_patient_indexes, val_patient_indexes):
 
-    log_dir = 'fold_' + str(fold) + '/'
+    log_dir = 'fold_' + str(fold) + '/' #train(...) will be called for each fold, that is for folds 0,1,2,3,4
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
     num_slices_train = len(train_patient_indexes) * 189
@@ -31,7 +31,7 @@ def train(fold, train_patient_indexes, val_patient_indexes):
     # Create model
     K.clear_session()
     model = create_xception_unet_n(input_shape=input_shape, pretrained_weights_file=pretrained_weights_file)
-    model.compile(optimizer=Adam(lr=1e-3), loss=get_loss, metrics=[dice])
+    model.compile(optimizer=Adam(lr=1e-3), loss=get_loss, metrics=[dice]) #Before training a model, you need to configure the learning process, which is done via the compile method
 
     # Get callbacks
     checkpoint = ModelCheckpoint(log_dir + 'ep={epoch:03d}-loss={loss:.3f}-val_loss={val_loss:.3f}.h5', verbose=1,
@@ -82,18 +82,20 @@ def train(fold, train_patient_indexes, val_patient_indexes):
 def main():
     # prepare indexes of patients for training and validation, respectively
     num_patients = 229
-    patients_indexes = np.array([i for i in range(num_patients)])
-    kf = KFold(n_splits=num_folds, shuffle=False)
+    patients_indexes = np.array([i for i in range(num_patients)]) #patients_indexes is a 1d array containing 229 numbers (0-228)
+    kf = KFold(n_splits=num_folds, shuffle=False) #num_folds = 5
+    #K-Folds cross-validator. Provides train/test indices to split data in train/test sets. Split dataset into k consecutive folds (without shuffling by default). Each fold is then used once as a validation while the k - 1 remaining folds form the training set.
 
     # train, and record the scores of each fold
     folds_score = []
     for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)):
+        #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 fold, each fold contains a pair of ndarray of train and validation indices 
         fold_mean_score = train(fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes)
-        folds_score.append(fold_mean_score)
+        folds_score.append(fold_mean_score)#put mean score for each of the 5 folds in one list
 
     # calculate average score
     print('Final score from ', num_folds, ' folds cross validation:')
-    final_score = {}
+    final_score = {} #create an empty dictionary
     for key in folds_score[0].keys():
         scores = []
         for i in range(num_folds):
