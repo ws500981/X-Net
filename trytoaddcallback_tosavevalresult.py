@@ -10,9 +10,10 @@ from sklearn.model_selection import KFold
 from utils import get_score_from_all_slices
 from model import create_xception_unet_n
 from loss import get_loss, dice
-from data import create_train_date_generator, create_val_date_generator
+from data_saveloadedimg import create_train_date_generator, create_val_date_generator
 
 import argparse
+import imageio
 
 data_file_path = '/home/wwu009/Project/hd5/file.h5'
 pretrained_weights_file = None
@@ -42,28 +43,34 @@ def train(ck_dir, fold, train_patient_indexes, val_patient_indexes):
     csv_logger = CSVLogger(log_dir + 'record.csv')
     tensorboard = TensorBoard(log_dir=log_dir)
 
+    save_val = LambdaCallback(
+            on_epoch_end=lambda epoch, logs:save_validation_results(ck_dir, val_patient_indexes,num_slices_val, model))
+
     # train the model
     model.fit_generator(
-        create_train_date_generator(patient_indexes=train_patient_indexes, h5_file_path=data_file_path, batch_size=batch_size),
+        create_train_date_generator(patient_indexes=train_patient_indexes, h5_file_path=data_file_path, batch_size=batch_size, ck_path = ck_dir),
         steps_per_epoch=max(1, num_slices_train // batch_size),
-        validation_data=create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, batch_size=9),
+        validation_data=create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, batch_size=9, ck_path = ck_dir),
         validation_steps=max(1, num_slices_val // 9),
-        epochs=100,
+        epochs=1,
         initial_epoch=0,
-        callbacks=[checkpoint, reduce_lr, tensorboard, csv_logger]) #early_stopping, tensorboard, csv_logger])
+        callbacks=[checkpoint, reduce_lr, tensorboard, csv_logger, save_val]) #early_stopping, tensorboard, csv_logger])
     model.save_weights(log_dir + 'trained_final_weights.h5')
 
     # Evaluate model
     predicts = []
     labels = []
-    f = create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path)
+    images = []
+    f = create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, ck_path = ck_dir)
     for _ in range(num_slices_val):
         img, label = f.__next__()
         predicts.append(model.predict(img))
         labels.append(label)
+        images.append(img)
     predicts = np.array(predicts)
     labels = np.array(labels)
     score_record = get_score_from_all_slices(labels=labels, predicts=predicts)
+        
 
     # save score
     df = pd.DataFrame(score_record)
@@ -80,6 +87,44 @@ def train(ck_dir, fold, train_patient_indexes, val_patient_indexes):
     return mean_score
 
 
+#save validation results
+def save_validation_results(ck_dir, val_patient_indexes,num_slices_val,model):
+    predicts = []
+    labels = []
+    f = create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, ck_path = ck_dir)
+    for _ in range(num_slices_val):
+        img, label = f.__next__()
+        predicts.append(model.predict(img))
+        labels.append(label)
+    save_result_path = ck_dir + '/saved_results/'
+    if not os.path.exists(save_result_path):
+        os.mkdir(save_result_path)
+    label_arr = np.array(labels)
+    pred_arr = np.array(predicts)
+    save_true_label = np.squeeze(label_arr, axis=1)
+    save_pred_label = np.squeeze(pred_arr, axis=1)
+    save_true_label = np.squeeze(save_true_label, axis=3)
+    save_pred_label = np.squeeze(save_pred_label, axis=3)
+    print('yes',save_true_label.shape)
+    print('yes',save_pred_label.shape)
+    save_true_label[save_true_label > 0] = 255
+    save_pred_label[save_pred_label > 0] = 255
+    save_true_label = save_true_label.astype(np.uint8)
+    save_pred_label = save_pred_label.astype(np.uint8)
+    assert len(save_true_label) == len(save_pred_label)
+    slicenumber = 0
+    for whatevernumber in range(len(save_pred_label)):
+        twod_label = save_true_label[whatevernumber,:,:]
+        twod_pred = save_pred_label[whatevernumber,:,:]
+        save_true_label_path =  str(slicenumber) + 'label_' + '.png'
+        save_pred_label_path = str(slicenumber) + 'pred_' + '.png'       
+        full_label_path = os.path.join(save_result_path,save_true_label_path)
+        full_pred_path = os.path.join(save_result_path,save_pred_label_path)
+        imageio.imwrite(full_label_path, twod_label)
+        imageio.imwrite(full_pred_path, twod_pred)
+        slicenumber += 1
+
+
 def main(args):
     # create checkpoint
     ck_path = './checkpoints/'+args.exp_nm
@@ -87,7 +132,7 @@ def main(args):
         os.mkdir(ck_path)
         
     # prepare indexes of patients for training and validation, respectively
-    num_patients = 239
+    num_patients = 8
     patients_indexes = np.array([i for i in range(num_patients)]) #patients_indexes is a 1d array containing 239 numbers (0-238)
     kf = KFold(n_splits=num_folds, shuffle=False) #num_folds = 5
     #K-Folds cross-validator. Provides train/test indices to split data in train/test sets. Split dataset into k consecutive folds (without shuffling by default). Each fold is then used once as a validation while the k - 1 remaining folds form the training set.
