@@ -15,7 +15,7 @@ from data_saveloadedimg import create_train_date_generator, create_val_date_gene
 import argparse
 import imageio
 
-data_file_path = '/home/wwu009/Project/hd5/file.h5'
+data_file_path = '/home/wwu009/Project/hd5/normalized_file.h5'
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
@@ -60,17 +60,15 @@ def train(ck_dir, fold, train_patient_indexes, val_patient_indexes):
     # Evaluate model
     predicts = []
     labels = []
-    images = []
     f = create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, ck_path = ck_dir)
     for _ in range(num_slices_val):
         img, label = f.__next__()
         predicts.append(model.predict(img))
         labels.append(label)
-        images.append(img)
     predicts = np.array(predicts)
     labels = np.array(labels)
     score_record = get_score_from_all_slices(labels=labels, predicts=predicts)
-        
+
 
     # save score
     df = pd.DataFrame(score_record)
@@ -107,8 +105,8 @@ def save_validation_results(ck_dir, val_patient_indexes,num_slices_val,model):
     save_pred_label = np.squeeze(save_pred_label, axis=3)
     print('yes',save_true_label.shape)
     print('yes',save_pred_label.shape)
-    save_true_label[save_true_label > 0] = 255
-    save_pred_label[save_pred_label > 0] = 255
+    save_true_label = save_true_label * 255
+    save_pred_label = save_pred_label * 255
     save_true_label = save_true_label.astype(np.uint8)
     save_pred_label = save_pred_label.astype(np.uint8)
     assert len(save_true_label) == len(save_pred_label)
@@ -117,7 +115,7 @@ def save_validation_results(ck_dir, val_patient_indexes,num_slices_val,model):
         twod_label = save_true_label[whatevernumber,:,:]
         twod_pred = save_pred_label[whatevernumber,:,:]
         save_true_label_path =  str(slicenumber) + 'label_' + '.png'
-        save_pred_label_path = str(slicenumber) + 'pred_' + '.png'       
+        save_pred_label_path = str(slicenumber) + 'pred_' + '.png'
         full_label_path = os.path.join(save_result_path,save_true_label_path)
         full_pred_path = os.path.join(save_result_path,save_pred_label_path)
         imageio.imwrite(full_label_path, twod_label)
@@ -130,7 +128,7 @@ def main(args):
     ck_path = './checkpoints/'+args.exp_nm
     if not os.path.exists(ck_path):
         os.mkdir(ck_path)
-        
+
     # prepare indexes of patients for training and validation, respectively
     num_patients = 8
     patients_indexes = np.array([i for i in range(num_patients)]) #patients_indexes is a 1d array containing 239 numbers (0-238)
@@ -139,8 +137,8 @@ def main(args):
 
     # train, and record the scores of each fold
     folds_score = []
-    for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)): 
-        #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 folds, each fold contains a pair of ndarray of train and validation indices 
+    for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)):
+        #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 folds, each fold contains a pair of ndarray of train and validation indices
         fold_mean_score = train(ck_dir =ck_path, fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
 
@@ -167,4 +165,3 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     main(args)
-

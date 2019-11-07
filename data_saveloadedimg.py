@@ -23,6 +23,7 @@ def train_data_generator(patient_indexes, h5_file_path, batch_size, ck_path):
             slice_indexes.append(patient_index * 189 + slice_index) #put each slice number into slice_indexes, all together 229*189 slices
     num_of_slices = len(slice_indexes) #229*189 slices in total
     print(num_of_slices)
+    # the above comment need to be amemded because patient_indexes is not the total no of patients, only those for train but not val
 
     #start = time.process_time()
     while True:
@@ -38,25 +39,19 @@ def train_data_generator(patient_indexes, h5_file_path, batch_size, ck_path):
             save_loaded_path = ck_path + '/saved_loaded_train/'
             if not os.path.exists(save_loaded_path):
                 os.mkdir(save_loaded_path)
-            print('loaded_train_yes',current_img.shape)
-            print('loaded_train_yes',current_label.shape)
-            current_img[current_img > 0] = 255
-            current_label[current_label > 0] = 255
-            current_img = current_img.astype(np.uint8)
-            current_label = current_label.astype(np.uint8)
-            assert len(current_img) == len(current_label)
-            slicenumber = 0
-            for whatevernumber in range(len(current_label)):
-                twod_img = current_img
-                twod_label = current_label
-                save_loaded_img_path =  str(slicenumber) + 'img_' + '.png'
-                save_loaded_label_path = str(slicenumber) + 'label_' + '.png'       
-                full_img_path = os.path.join(save_loaded_path,save_loaded_img_path)
-                full_label_path = os.path.join(save_loaded_path,save_loaded_label_path)
-                imageio.imwrite(full_img_path, twod_img)
-                imageio.imwrite(full_label_path, twod_label)
-                whatevernumber += 1
-                slicenumber += 1
+            #print('loaded_train_yes',current_img.shape)
+            #print('loaded_train_yes',current_label.shape) #they should be 2d arrays
+            twod_img = current_img * 255
+            twod_label = current_label * 255
+            twod_img = twod_img.astype(np.uint8)
+            twod_label = twod_label.astype(np.uint8)
+            assert len(twod_img) == len(twod_label)
+            save_loaded_img_path =  str(i) + 'img_' + '.png'
+            save_loaded_label_path = str(i) + 'label_' + '.png'       
+            full_img_path = os.path.join(save_loaded_path,save_loaded_img_path)
+            full_label_path = os.path.join(save_loaded_path,save_loaded_label_path)
+            imageio.imwrite(full_img_path, twod_img)
+            imageio.imwrite(full_label_path, twod_label)
 
             batch_img.append(current_img)
             batch_label.append(current_label)
@@ -97,23 +92,17 @@ def val_data_generator(patient_indexes, h5_file_path, ck_path, batch_size=1):
                 os.mkdir(save_loaded_path)
             print('loaded_val_yes',current_img.shape)
             print('loaded_val_yes',current_label.shape)
-            current_img[current_img > 0] = 255
-            current_label[current_label > 0] = 255
-            current_img = current_img.astype(np.uint8)
-            current_label = current_label.astype(np.uint8)
-            assert len(current_img) == len(current_label)
-            slicenumber = 0
-            for whatevernumber in range(len(current_label)):
-                twod_img = current_img
-                twod_label = current_label
-                save_loaded_img_path =  str(slicenumber) + 'img_' + '.png'
-                save_loaded_label_path = str(slicenumber) + 'label_' + '.png'       
-                full_img_path = os.path.join(save_loaded_path,save_loaded_img_path)
-                full_label_path = os.path.join(save_loaded_path,save_loaded_label_path)
-                imageio.imwrite(full_img_path, twod_img)
-                imageio.imwrite(full_label_path, twod_label)
-                whatevernumber += 1
-                slicenumber += 1
+            twod_img = current_img * 255
+            twod_label = current_label * 255
+            twod_img = twod_img.astype(np.uint8)
+            twod_label = twod_label.astype(np.uint8)
+            assert len(twod_img) == len(twod_label)
+            save_loaded_img_path =  str(i) + 'img_' + '.png'
+            save_loaded_label_path = str(i) + 'label_' + '.png'       
+            full_img_path = os.path.join(save_loaded_path,save_loaded_img_path)
+            full_label_path = os.path.join(save_loaded_path,save_loaded_label_path)
+            imageio.imwrite(full_img_path, twod_img)
+            imageio.imwrite(full_label_path, twod_label)
 
             batch_img.append(current_img)
             batch_label.append(current_label)

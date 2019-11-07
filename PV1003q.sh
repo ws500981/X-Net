@@ -1,6 +1,6 @@
 #!/bin/sh
 #SBATCH -o gpu-job-%j.output
-#SBATCH -p DGXq
+#SBATCH -p GV1002q
 #SBATCH --gres=gpu:1
 #SBATCH -n 1
 
@@ -11,4 +11,4 @@ export PATH=/home/wwu009/miniconda3/envs/pix2pix/bin:$PATH
 cd /home/wwu009/Project/X-Net
 
 set -ex
-python main.py --exp_nm b_size8_4.0_noearlystop_saveresults_try
+python main.py --exp_nm new_b_size8_3.0

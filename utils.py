@@ -53,22 +53,24 @@ def get_score_from_all_slices(labels, predicts, threshold=0.5):
     iou_scores = []
     precision_scores = []
     recall_scores = []
-    f1_scores = []
-    voe_scores = []
-    rvd_scores = []
+    #f1_scores = []
+    #voe_scores = []
+    #rvd_scores = []
     for i in range(labels.shape[0] // 189):
         tmp_labels = labels[i*189 : (i+1)*189]
         tmp_pred = predicts[i*189 : (i+1)*189]
+        #tmp_dice, tmp_iou, tmp_precision,\
+        #    tmp_recall, tmp_f1, tmp_voe,\
+        #    tmp_rvd = get_score_for_one_patient(labels=tmp_labels, predicts=tmp_pred, threshold=threshold)
         tmp_dice, tmp_iou, tmp_precision,\
-            tmp_recall, tmp_f1, tmp_voe,\
-            tmp_rvd = get_score_for_one_patient(labels=tmp_labels, predicts=tmp_pred, threshold=threshold)
+            tmp_recall = get_score_for_one_patient(labels=tmp_labels, predicts=tmp_pred, threshold=threshold)
         dice_scores.append(tmp_dice)
         iou_scores.append(tmp_iou)
         precision_scores.append(tmp_precision)
         recall_scores.append(tmp_recall)
-        f1_scores.append(tmp_f1)
-        voe_scores.append(tmp_voe)
-        rvd_scores.append(tmp_rvd)
+        #f1_scores.append(tmp_f1)
+        #voe_scores.append(tmp_voe)
+        #rvd_scores.append(tmp_rvd)
 
     scores = {}
     scores['dice'] = dice_scores

@@ -11,4 +11,4 @@ export PATH=/home/wwu009/miniconda3/envs/pix2pix/bin:$PATH
 cd /home/wwu009/Project/X-Net
 
 set -ex
-python trytoaddcallback_tosavevalresult.py --exp_nm save_loadedandoutput1.0
+python trytoaddcallback_tosavevalresult.py --exp_nm save_loadedandoutput_tryabit
