@@ -98,7 +98,7 @@ def main(args):
         #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 folds, each fold contains a pair of ndarray of train and validation indices
         fold_mean_score = train(ck_dir =ck_path, fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
-
+        break
     # calculate average score
     print('Final score from ', num_folds, ' folds cross validation:')
     final_score = {} #create an empty dictionary
