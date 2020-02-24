@@ -9,6 +9,7 @@ checkpoints/
 results/
 build/
 dist/
+scripts/
 
 
 *.png

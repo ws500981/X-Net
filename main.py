@@ -14,14 +14,14 @@ from data import create_train_date_generator, create_val_date_generator
 
 import argparse
 
-data_file_path = '/home/wwu009/Project/hd5/normalized_file.h5'
+
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
 num_folds = 5
 
 
-def train(ck_dir, fold, train_patient_indexes, val_patient_indexes):
+def train(ck_dir, fold, train_patient_indexes, val_patient_indexes, data_file_path):
 
     log_dir = os.path.join(ck_dir,'fold_' + str(fold) + '/') #train(...) will be called for each fold, that is for folds 0,1,2,3,4
     if not os.path.isdir(log_dir):
@@ -96,7 +96,8 @@ def main(args):
     folds_score = []
     for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)):
         #kf.split(patients_indexes) is a 2d array-like thing, if num_folds = 5, kf.split(...) will contain 5 folds, each fold contains a pair of ndarray of train and validation indices
-        fold_mean_score = train(ck_dir =ck_path, fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
+        fold_mean_score = train(ck_dir =ck_path, fold=fold, train_patient_indexes=train_patient_indexes, 
+                                val_patient_indexes=val_patient_indexes,data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
         break
     # calculate average score
@@ -118,6 +119,7 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     parser = argparse.ArgumentParser(description='X-Net.')
     parser.add_argument('--exp_nm',required=True ,help='experiment name')
+    parser.add_argument('--data_file_path', default='/home/wwu009/Project/hd5/normalized_file.h5', help='The path to h5py data file')
 
 
     args = parser.parse_args()
