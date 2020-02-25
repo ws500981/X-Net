@@ -28,7 +28,7 @@ def save2h5py(ds_pth, h5py_pth):
     # 1) add all label volumes tgr 
     # 2) save label to array  
     # 3) save lesion to array 
-    ds_pth = ds_pth + '/*/c*'
+    ds_pth = ds_pth + '/c0004/c0004s0004t01'
     listofpaths = glob.glob(ds_pth, recursive=True) #get folder paths (each folder is for one brain with lesion+labels)
     assert len(listofpaths) > 0, 'No directory found that follows the defined pattern: %s. The glob results are: %s'%(ds_pth, str(listofpaths))
     listofpaths.sort()
@@ -56,7 +56,7 @@ def save2h5py(ds_pth, h5py_pth):
             print('label_sum uniques: %s'%(str(np.unique(labelimg_data, return_counts=True))))
         print('arr.max() %.3f, %.3f'%(labelimg_data.max(),float(labelimg_data.max())) )
         print('arr.min() %.3f, %.3f'%(labelimg_data.min(),float(labelimg_data.min())) )
-        labelimg_data = labelimg_data.astype(np.uint8) #set as unsigned int8 first before normalization because after normalization everything will be less than 1 so they will become 0 with astype(np.uint8)
+        labelimg_data = np.round(labelimg_data).astype(np.uint8) #set as unsigned int8 first before normalization because after normalization everything will be less than 1 so they will become 0 with astype(np.uint8)
         print('arr.max() %.3f, %.3f'%(labelimg_data.max(),float(labelimg_data.max())) )
         print('arr.min() %.3f, %.3f'%(labelimg_data.min(),float(labelimg_data.min())) )
         labelimg_data = normalise(labelimg_data, new_max=1, new_min=0) #normalize the data from range [0,255] to range[0,1]
@@ -174,9 +174,12 @@ def normalise(array, new_min, new_max):
     """
     old_max = float(array.max())
     old_min = float(array.min())
+    if
     array = (new_max - new_min) * (array - old_min) / (old_max - old_min) + new_min
 
-    assert array.max() == new_max , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
+    #assert array.max() == new_max , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
+    #assert array.min() == new_min , 'Normalization fails: requested new_min=%.3f, resulted new_min=%.3f, old_min=%.3f'%(new_min, array.min(), old_min)
+    if not array.max() == new_max , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
     assert array.min() == new_min , 'Normalization fails: requested new_min=%.3f, resulted new_min=%.3f, old_min=%.3f'%(new_min, array.min(), old_min)
     
     return array
