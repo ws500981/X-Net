@@ -64,6 +64,7 @@ def save2h5py(ds_pth, h5py_pth):
         labelimg_data = np.round(labelimg_data)
         print('label_sum_norm uniques: %s'%(str(np.unique(labelimg_data,return_counts=True))))
         labelimg_data = np.swapaxes(labelimg_data,0,2) #swap the axes such that the first dimension is the slice number
+        assert labelimg_data.shape == (189, 233, 197)
         if brainnumber == 0: #save all slices (239 brains)*(189 for each brain) into a single array
             label_array = labelimg_data
             print('label',np.shape(label_array))
@@ -79,6 +80,7 @@ def save2h5py(ds_pth, h5py_pth):
         print('arr.max()%.3f , arr.min() %.3f'%(lesionimg_data.max(), lesionimg_data.min()) )
         lesionimg_data = normalise(lesionimg_data, new_max=1, new_min=-1)
         lesionimg_data = np.swapaxes(lesionimg_data,0,2) #swap the axes such that the first dimension is the slice number
+        assert lesionimg_data.shape == (189, 233, 197)
         if brainnumber == 0: #save all slices (239 brains)*(189 for each brain) into a single array
             lesion_array = lesionimg_data
             print('lesion',np.shape(lesion_array), '\n')
