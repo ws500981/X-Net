@@ -74,8 +74,14 @@ def save2h5py(ds_pth, h5py_pth):
         print(listoflesionpath[0])
         lesionimg = nib.load(listoflesionpath[0])
         lesionimg_data = lesionimg.get_fdata()
+        print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
+        print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
         lesionimg_data = lesionimg_data.astype(np.uint8)
+        print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
+        print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
         lesionimg_data = normalise(lesionimg_data, new_max=1, new_min=-1)
+        print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
+        print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
         lesionimg_data = np.swapaxes(lesionimg_data,0,2) #swap the axes such that the first dimension is the slice number
         if brainnumber == 0: #save all slices (239 brains)*(189 for each brain) into a single array
             lesion_array = lesionimg_data
@@ -175,7 +181,7 @@ def normalise(array, new_min, new_max):
     old_max = float(array.max())
     old_min = float(array.min())
 
-    assert old_max != old_min, 'Max and mean of array is the same, normalization fails: %.3f.'%old_max
+    assert old_max != old_min, 'Max and min of array is the same, normalization fails: %.3f.'%old_max
 
     array = (new_max - new_min) * (array - old_min) / (old_max - old_min) + new_min
 
