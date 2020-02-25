@@ -129,9 +129,13 @@ def check_h5py(h5py_pth, save_pth):
     whatevernumber = 0
  
     for whatevernumber in range(384):
-        current_img = label[whatevernumber]
-        current_label = lesion[whatevernumber]
+        current_img = lesion[whatevernumber]
+        current_label = label[whatevernumber]
 
+        print('current_img.max() %.3f, %.3f'%(current_img.max(),float(current_img.max())) )
+        print('current_img.min() %.3f, %.3f'%(current_img.min(),float(current_img.min())) )
+        print('current_label.max() %.3f, %.3f'%(current_label.max(),float(current_label.max())) )
+        print('current_label.min() %.3f, %.3f'%(current_label.min(),float(current_label.min())) )
         current_img = normalise(current_img, new_max=255, new_min=0) 
         current_label =  normalise(current_label, new_max=255, new_min=0) 
         current_img = current_img.astype(np.uint8)
