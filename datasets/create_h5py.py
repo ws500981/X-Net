@@ -76,7 +76,7 @@ def save2h5py(ds_pth, h5py_pth):
         lesionimg_data = lesionimg.get_fdata()
         print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
         print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
-        lesionimg_data = lesionimg_data.astype(np.uint8)
+        #lesionimg_data = lesionimg_data.astype(np.uint8)
         print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
         print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
         lesionimg_data = normalise(lesionimg_data, new_max=1, new_min=-1)
