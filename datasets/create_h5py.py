@@ -28,7 +28,7 @@ def save2h5py(ds_pth, h5py_pth):
     # 1) add all label volumes tgr 
     # 2) save label to array  
     # 3) save lesion to array 
-    ds_pth = ds_pth + '/c0004/c0004s0004t01'
+    ds_pth = ds_pth + '/c0004/c*'
     listofpaths = glob.glob(ds_pth, recursive=True) #get folder paths (each folder is for one brain with lesion+labels)
     assert len(listofpaths) > 0, 'No directory found that follows the defined pattern: %s. The glob results are: %s'%(ds_pth, str(listofpaths))
     listofpaths.sort()
@@ -52,6 +52,10 @@ def save2h5py(ds_pth, h5py_pth):
             print(list_a_item)
             img = nib.load(list_a_item).get_fdata()
             print('label uniques: %s'%(str(np.unique(img, return_counts=True))))
+            check_vec = np.unique(img)
+            if not (check_vec[0] ==0 and check_vec[1] == 1 and len(check_vec) == 2):
+                print('!!!!!!!!!!!!!!!!!!!!Alert!!!!!!!!!!!!!!!!!!!!!!!!!')
+
             labelimg_data = np.add(labelimg_data, img)
             print('label_sum uniques: %s'%(str(np.unique(labelimg_data, return_counts=True))))
         labelimg_data = np.round(labelimg_data).astype(np.uint8) #set as unsigned int8 first before normalization because after normalization everything will be less than 1 so they will become 0 with astype(np.uint8)
