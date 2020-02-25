@@ -61,6 +61,8 @@ def save2h5py(ds_pth, h5py_pth):
         check_vec = np.unique(labelimg_data)
         if not (check_vec[0] ==0 and check_vec[1] == 1 and len(check_vec) == 2):
             print('!!!!!!!!!!!!!!!!!!!!Alert!!!!!!!!!!!!!!!!!!!!!!!!!')
+        labelimg_data = np.round(labelimg_data)
+        print('label_sum_norm uniques: %s'%(str(np.unique(labelimg_data,return_counts=True))))
         labelimg_data = np.swapaxes(labelimg_data,0,2) #swap the axes such that the first dimension is the slice number
         if brainnumber == 0: #save all slices (239 brains)*(189 for each brain) into a single array
             label_array = labelimg_data
