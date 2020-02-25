@@ -185,8 +185,9 @@ def normalise(array, new_min, new_max):
     old_max = float(array.max())
     old_min = float(array.min())
 
-    assert old_max != old_min, 'Max and min of array is the same, normalization fails: %.3f.'%old_max
-
+    if old_max == old_min:
+        return np.zeros_like(array) + new_min
+    
     array = (new_max - new_min) * (array - old_min) / (old_max - old_min) + new_min
 
     assert abs(array.max() - new_max) < 0.001 , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
