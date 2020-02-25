@@ -36,6 +36,8 @@ def save2h5py(ds_pth, h5py_pth):
 
     for i in range(len(listofpaths)):
         folder = listofpaths[i]
+        print('progress: %d-th / %d: folder %s'%(i, len(listofpaths), folder))
+        
         lesionpath = folder+'/*t1w*.nii.gz'
         labelpath = folder+'/*LesionSmooth*.nii.gz'
         listoflesionpath = glob.glob(lesionpath,recursive = True) #get all lesion paths in this folder
