@@ -189,8 +189,8 @@ def normalise(array, new_min, new_max):
 
     array = (new_max - new_min) * (array - old_min) / (old_max - old_min) + new_min
 
-    assert array.max() == new_max , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
-    assert array.min() == new_min , 'Normalization fails: requested new_min=%.3f, resulted new_min=%.3f, old_min=%.3f'%(new_min, array.min(), old_min)
+    assert abs(array.max() - new_max) < 0.001 , 'Normalization fails: requested new_max=%.3f, resulted new_max=%.3f, old_max=%.3f'%(new_max, array.max(), old_max)
+    assert abs(array.min() == new_min) < 0.001 , 'Normalization fails: requested new_min=%.3f, resulted new_min=%.3f, old_min=%.3f'%(new_min, array.min(), old_min)
 
     return array
 
