@@ -30,7 +30,7 @@ def save2h5py(ds_pth, h5py_pth):
     # 3) save lesion to array 
     ds_pth = ds_pth + '/*/c*/c*'
     listofpaths = glob.glob(ds_pth, recursive=True) #get folder paths (each folder is for one brain with lesion+labels)
-    assert len(listofpaths) > 0, 'No directory found that follows the defined pattern: %s. The glob results are: %s'%(ds_pth, str(listofpaths) 
+    assert len(listofpaths) > 0, 'No directory found that follows the defined pattern: %s. The glob results are: %s'%(ds_pth, str(listofpaths))
     listofpaths.sort()
     brainnumber = 0
 
