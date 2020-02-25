@@ -128,7 +128,7 @@ def check_h5py(h5py_pth, save_pth):
     print('3d_shape',np.shape(label))
     whatevernumber = 0
  
-    for whatevernumber in range(384):
+    for whatevernumber in range(lesion.shape[0]):
         current_img = lesion[whatevernumber]
         current_label = label[whatevernumber]
 
