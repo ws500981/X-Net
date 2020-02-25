@@ -13,7 +13,7 @@ import nibabel as nib
 
 
 
-def save2h5py(ds_pth, save_pth):
+def save2h5py(ds_pth, h5py_pth):
     '''Convert raw ATLAS dataset into h5py file.'''
 
     # check input paths
