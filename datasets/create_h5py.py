@@ -126,8 +126,8 @@ def check_h5py(h5py_pth, save_pth):
         current_img = label[whatevernumber]
         current_label = lesion[whatevernumber]
 
-        current_img = normalize(current_img, new_max=255, new_min=0) 
-        current_label =  normalize(current_label, new_max=255, new_min=0) 
+        current_img = normalise(current_img, new_max=255, new_min=0) 
+        current_label =  normalise(current_label, new_max=255, new_min=0) 
         current_img = current_img.astype(np.uint8)
         current_label = current_label.astype(np.uint8)
 
