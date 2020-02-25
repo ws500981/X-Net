@@ -52,16 +52,15 @@ def save2h5py(ds_pth, h5py_pth):
             print(list_a_item)
             img = nib.load(list_a_item).get_fdata()
             print('label uniques: %s'%(str(np.unique(img, return_counts=True))))
-            check_vec = np.unique(img)
-            if not (check_vec[0] ==0 and check_vec[1] == 1 and len(check_vec) == 2):
-                print('!!!!!!!!!!!!!!!!!!!!Alert!!!!!!!!!!!!!!!!!!!!!!!!!')
-
             labelimg_data = np.add(labelimg_data, img)
             print('label_sum uniques: %s'%(str(np.unique(labelimg_data, return_counts=True))))
         labelimg_data = np.round(labelimg_data).astype(np.uint8) #set as unsigned int8 first before normalization because after normalization everything will be less than 1 so they will become 0 with astype(np.uint8)
         print('arr.max() %.3f, arr.min() %.3f'%(labelimg_data.max(),labelimg_data.min()) )
         labelimg_data = normalise(labelimg_data, new_max=1, new_min=0) #normalize the data from range [0,255] to range[0,1]
         print('label_sum_norm uniques: %s'%(str(np.unique(labelimg_data,return_counts=True))))
+        check_vec = np.unique(labelimg_data)
+        if not (check_vec[0] ==0 and check_vec[1] == 1 and len(check_vec) == 2):
+            print('!!!!!!!!!!!!!!!!!!!!Alert!!!!!!!!!!!!!!!!!!!!!!!!!')
         labelimg_data = np.swapaxes(labelimg_data,0,2) #swap the axes such that the first dimension is the slice number
         if brainnumber == 0: #save all slices (239 brains)*(189 for each brain) into a single array
             label_array = labelimg_data
