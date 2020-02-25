@@ -137,7 +137,7 @@ def check_h5py(h5py_pth, save_pth):
         print('current_label.max() %.3f, %.3f'%(current_label.max(),float(current_label.max())) )
         print('current_label.min() %.3f, %.3f'%(current_label.min(),float(current_label.min())) )
         current_img = normalise(current_img, new_max=255, new_min=0) 
-        current_label =  normalise(current_label, new_max=255, new_min=0) 
+        current_label =  current_label * 255
         current_img = current_img.astype(np.uint8)
         current_label = current_label.astype(np.uint8)
 
