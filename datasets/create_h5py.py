@@ -74,8 +74,7 @@ def save2h5py(ds_pth, h5py_pth):
         print(listoflesionpath[0])
         lesionimg = nib.load(listoflesionpath[0])
         lesionimg_data = lesionimg.get_fdata()
-        print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
-        print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
+        print('arr.min() %.3f   arr.max() %.3f'%(lesionimg_data.min(),float(lesionimg_data.max())) )
         #lesionimg_data = lesionimg_data.astype(np.uint8)
         print('arr.max() %.3f, %.3f'%(lesionimg_data.max(),float(lesionimg_data.max())) )
         print('arr.min() %.3f, %.3f'%(lesionimg_data.min(),float(lesionimg_data.min())) )
@@ -128,14 +127,11 @@ def check_h5py(h5py_pth, save_pth):
     print('3d_shape',np.shape(label))
     whatevernumber = 0
  
-    for whatevernumber in range(lesion.shape[0]):
+    selected_idx = np.random.choice(lesion.shape[0], 189, replace=False)
+    for whatevernumber in selected_idx:
         current_img = lesion[whatevernumber]
         current_label = label[whatevernumber]
 
-        print('current_img.max() %.3f, %.3f'%(current_img.max(),float(current_img.max())) )
-        print('current_img.min() %.3f, %.3f'%(current_img.min(),float(current_img.min())) )
-        print('current_label.max() %.3f, %.3f'%(current_label.max(),float(current_label.max())) )
-        print('current_label.min() %.3f, %.3f'%(current_label.min(),float(current_label.min())) )
         current_img = normalise(current_img, new_max=255, new_min=0) 
         current_label =  current_label * 255
         current_img = current_img.astype(np.uint8)
