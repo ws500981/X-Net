@@ -192,7 +192,7 @@ def main(args):
     save2h5py(ds_pth, h5py_pth)
 
     if args.run_check:
-        check_h5py(args.check_save_pth)
+        check_h5py(h5py_pth = h5py_pth, save_pth = args.check_save_pth)  
 
 
 if __name__ == '__main__':
