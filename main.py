@@ -100,7 +100,7 @@ def main(args):
             continue
         train_patient_indexes = split_index_dict[str(fold)]['train_patient_indexes']
         val_patient_indexes = split_index_dict[str(fold)]['val_patient_indexes'] 
-        fold_mean_score = train(log_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes[:2], #TODO
+        fold_mean_score = train(log_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes[:10], #TODO
                                 val_patient_indexes=val_patient_indexes[:2],data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         
         fold_mean_score['fold'] = fold
@@ -151,9 +151,9 @@ def get_split_index_dict():
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     parser = argparse.ArgumentParser(description='X-Net.')
-    parser.add_argument('--exp_nm',required=True ,help='experiment name')
+    parser.add_argument('--exp_nm', required=True ,help='experiment name')
     parser.add_argument('--data_file_path', default='/home/wwu009/Project/hd5/normalized_file.h5', help='The path to h5py data file')
 
 
