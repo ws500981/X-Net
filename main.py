@@ -83,7 +83,7 @@ def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_p
 
 def main(args):
     print(device_lib.list_local_devices())
-    print('available GPUs:' K.tensorflow_backend._get_available_gpus())
+    print('available GPUs:', K.tensorflow_backend._get_available_gpus())
     # create checkpoint
     ck_path = './checkpoints/'+args.exp_nm
     if not os.path.exists(ck_path):
