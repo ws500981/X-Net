@@ -88,7 +88,7 @@ def main():
     # train, and record the scores of each fold
     folds_score = []
     for fold, (train_patient_indexes, val_patient_indexes) in enumerate(kf.split(patients_indexes)):
-        fold_mean_score = train(fold=fold, train_patient_indexes=train_patient_indexes, val_patient_indexes=val_patient_indexes)
+        fold_mean_score = train(fold=fold, train_patient_indexes=train_patient_indexes[0:2], val_patient_indexes=val_patient_indexes[0:2])
         folds_score.append(fold_mean_score)
 
     # calculate average score
