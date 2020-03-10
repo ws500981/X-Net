@@ -19,7 +19,7 @@ import argparse
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
-num_folds = 5
+num_folds = 3 #TODO
 
 
 def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_path):
@@ -46,7 +46,7 @@ def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_p
         steps_per_epoch=max(1, num_slices_train // batch_size),
         validation_data=create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, batch_size=9),
         validation_steps=max(1, num_slices_val // 9),
-        epochs=100,
+        epochs=1,
         initial_epoch=0,
         callbacks=[checkpoint, reduce_lr, tensorboard, csv_logger]) #early_stopping, tensorboard, csv_logger])
     model.save_weights(log_dir + 'trained_final_weights.h5')
@@ -97,8 +97,8 @@ def main(args):
             continue
         train_patient_indexes = split_index_dict[str(fold)]['train_patient_indexes']
         val_patient_indexes = split_index_dict[str(fold)]['val_patient_indexes'] 
-        fold_mean_score = train(ck_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes[0], #TODO
-                                val_patient_indexes=val_patient_indexes,data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
+        fold_mean_score = train(ck_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes[0:2], #TODO
+                                val_patient_indexes=val_patient_indexes[0:2],data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         
         fold_mean_score['fold'] = fold
         res_df = pd.DataFrame.from_dict(fold_mean_score).T
