@@ -20,7 +20,7 @@ pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
 num_folds = 3 #TODO
-nepoch = 3
+nepoch = 50
 
 
 def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_path):
@@ -101,7 +101,7 @@ def main(args):
             continue
         train_patient_indexes = split_index_dict[str(fold)]['train_patient_indexes']
         val_patient_indexes = split_index_dict[str(fold)]['val_patient_indexes'] 
-        fold_mean_score = train(log_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes[:2], #TODO
+        fold_mean_score = train(log_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes, #TODO
                                 val_patient_indexes=val_patient_indexes,data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         
         fold_mean_score['fold'] = fold
@@ -109,21 +109,10 @@ def main(args):
         write_header = True if not os.path.exists(all_res_path) else False # write header
         res_df.to_csv(all_res_path, mode='a',index=False, header=write_header)
         
-        #folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
 
     # calculate average score
     print('Final score from ', num_folds, ' folds cross validation saved to ',all_res_path)
-    # final_score = {} #create an empty dictionary
-    # for key in folds_score[0].keys():
-    #     scores = []
-    #     for i in range(num_folds):
-    #         scores.append(folds_score[i][key])
-    #     final_score[key] = np.mean(scores)
-    #     print(key, ' score: \t', final_score[key])
 
-    # # save final score
-    # df = pd.DataFrame(final_score, index=[0])
-    # df.to_csv(ck_path,'x_net_final_score.csv', index=False)
 
 
 
