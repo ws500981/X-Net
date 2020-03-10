@@ -188,11 +188,10 @@ def normalise(array, new_min, new_max):
 
 
 def main(args):
-    ds_pth = args.ds_pth
     h5py_pth = args.h5py_pth
 
     if args.run_save:
-        save2h5py(ds_pth, h5py_pth)
+        save2h5py(args.ds_pth, h5py_pth)
 
     if args.run_check:
         check_h5py(h5py_pth = h5py_pth, save_pth = args.check_save_pth, check_1st_patient=args.check_one_patient)  
