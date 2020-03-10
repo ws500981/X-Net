@@ -93,6 +93,7 @@ def get_score_from_all_slices(labels, predicts, threshold=0.5):
     scores['iou'] = iou_scores
     scores['precision'] = precision_scores
     scores['recall'] = recall_scores
+    print(scores)
 
     return scores
 

@@ -17,7 +17,9 @@ data_file_path = '/home/wwu009/Project/hd5/normalized_file.h5'
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
 batch_size = 8
-num_folds = 5
+num_folds = 3 #TODO
+nepoch = 50
+
 
 
 def train(fold, train_patient_indexes, val_patient_indexes):
@@ -47,7 +49,7 @@ def train(fold, train_patient_indexes, val_patient_indexes):
         steps_per_epoch=max(1, num_slices_train // batch_size),
         validation_data=create_val_date_generator(patient_indexes=val_patient_indexes, h5_file_path=data_file_path, batch_size=9),
         validation_steps=max(1, num_slices_val // 9),
-        epochs=100,
+        epochs=nepoch,
         initial_epoch=0,
         callbacks=[checkpoint, reduce_lr, early_stopping, tensorboard, csv_logger])
     model.save_weights(log_dir + 'trained_final_weights.h5')
@@ -79,7 +81,42 @@ def train(fold, train_patient_indexes, val_patient_indexes):
     return mean_score
 
 
-def main():
+def main(args):
+    print('available GPUs:', K.tensorflow_backend._get_available_gpus())
+    # create checkpoint
+    ck_path = './checkpoints/'+args.exp_nm
+    if not os.path.exists(ck_path):
+        recursive_mkdir(ck_path)
+    all_res_path = os.path.join(ck_path, 'result_summary.csv')
+
+    split_index_dict = get_split_index_dict()
+    
+
+    for fold in range(num_folds):
+        log_dir = os.path.join(ck_path,'fold_' + str(fold) + '/') #skip if exists
+        if not os.path.exists(log_dir):
+            os.mkdir(log_dir)
+        else:
+            continue
+        train_patient_indexes = split_index_dict[str(fold)]['train_patient_indexes']
+        val_patient_indexes = split_index_dict[str(fold)]['val_patient_indexes'] 
+        fold_mean_score = train(log_dir =log_dir, fold=fold, train_patient_indexes=train_patient_indexes, #TODO
+                                val_patient_indexes=val_patient_indexes,data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
+        
+        fold_mean_score['fold'] = fold
+        res_df = pd.DataFrame.from_dict(fold_mean_score)
+        write_header = True if not os.path.exists(all_res_path) else False # write header
+        res_df.to_csv(all_res_path, mode='a',index=False, header=write_header)
+        
+
+    # calculate average score
+    print('Final score from ', num_folds, ' folds cross validation saved to ',all_res_path)
+
+
+
+
+def get_split_index_dict():
+
     # prepare indexes of patients for training and validation, respectively
     num_patients = 229
     patients_indexes = np.array([i for i in range(num_patients)])
