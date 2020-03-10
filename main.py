@@ -1,3 +1,4 @@
+import torch
 import keras
 import keras.backend as K
 import numpy as np
@@ -51,7 +52,13 @@ def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_p
         initial_epoch=0,
         callbacks=[checkpoint, reduce_lr, tensorboard, csv_logger]) #early_stopping, tensorboard, csv_logger])
     model.save_weights(log_dir + 'trained_final_weights.h5')
-
+    
+    msg = '' #TODO
+    max_mem_a = torch.cuda.max_memory_allocated(0) * 1e-9
+    max_mem_c = torch.cuda.max_memory_cached(0) * 1e-9
+    msg += 'device %s.max_mem_allocated:%.2f, max_mem_cached:%.2f ||  ' %(str(id), max_mem_a, max_mem_c)
+    
+    print(msg, flush=True)
     # Evaluate model
     predicts = []
     labels = []
@@ -91,6 +98,13 @@ def main(args):
     all_res_path = os.path.join(ck_path, 'result_summary.csv')
 
     split_index_dict = get_split_index_dict()
+
+    msg = '' #TODO
+    max_mem_a = torch.cuda.max_memory_allocated(0) * 1e-9
+    max_mem_c = torch.cuda.max_memory_cached(0) * 1e-9
+    msg += 'device %s.max_mem_allocated:%.2f, max_mem_cached:%.2f ||  ' %(str(id), max_mem_a, max_mem_c)
+    
+    print(msg, flush=True)
 
     for fold in range(num_folds):
         log_dir = os.path.join(ck_path,'fold_' + str(fold) + '/') #skip if exists
