@@ -11,6 +11,11 @@ import numpy as np
 #from PIL import Image
 import nibabel as nib
 
+
+if __name__=='__main__':
+    import sys
+    sys.path[0] = '/home/yuhao001/projects/X-Net/'
+
 from utils import recursive_mkdir
 
 
@@ -107,7 +112,7 @@ def save2h5py(ds_pth, h5py_pth):
 
 
 
-def check_h5py(h5py_pth, save_pth):
+def check_h5py(h5py_pth, save_pth, check_1st_patient):
     '''Visualize h5py file through extracting arrays into .png files'''
 
 
@@ -128,7 +133,10 @@ def check_h5py(h5py_pth, save_pth):
     print('3d_shape',np.shape(label))
     whatevernumber = 0
  
-    selected_idx = np.random.choice(lesion.shape[0], 189, replace=False)
+    if check_1st_patient:
+        selected_idx = np.random.choice(lesion.shape[0], 189, replace=False)
+    else:
+        selected_idx = list(range(0,189))
     for whatevernumber in selected_idx:
         current_img = lesion[whatevernumber]
         current_label = label[whatevernumber]
@@ -183,10 +191,11 @@ def main(args):
     ds_pth = args.ds_pth
     h5py_pth = args.h5py_pth
 
-    save2h5py(ds_pth, h5py_pth)
+    if args.run_save:
+        save2h5py(ds_pth, h5py_pth)
 
     if args.run_check:
-        check_h5py(h5py_pth = h5py_pth, save_pth = args.check_save_pth)  
+        check_h5py(h5py_pth = h5py_pth, save_pth = args.check_save_pth, check_1st_patient=args.check_one_patient)  
 
 
 if __name__ == '__main__':
@@ -194,8 +203,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='X-Net.')
     parser.add_argument('--ds_pth',default='/home/wwu009/Project/Atlas1.2standard_MNI(2.0)',help='Path of raw dataset')
     parser.add_argument('--h5py_pth', default='/home/wwu009/Project/hd5/normalized_file.h5', help='The full path of converted h5py data file')
+    parser.add_argument('--run_save', action='store_true',help='Whether to run saving function')
     parser.add_argument('--run_check', action='store_true',help='Whether to run checking function')
     parser.add_argument('--check_save_pth', default='/home/wwu009/Project/Dataloader/save_loaded', help='Required only when run_check is true. The path to save images for checking')
+    parser.add_argument('--check_one_patient', action='store_true',help='Display image of 1st patient rather than random sampling over the whole dataset')
+
 
 
     args = parser.parse_args()
