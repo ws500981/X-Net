@@ -101,9 +101,9 @@ def main(args):
                                 val_patient_indexes=val_patient_indexes[0:2],data_file_path=args.data_file_path) #for each fold of the 5, train & validate the model and return mean score, mean score is a dictionary
         
         fold_mean_score['fold'] = fold
-        res_df = pd.DataFrame.from_dict(fold_mean_score).T
+        res_df = pd.DataFrame.from_dict(fold_mean_score,orient='index').T
         write_header = True if not os.path.exists(all_res_path) else False # write header
-        x.to_csv(all_res_path, mode='a',index=False, header=write_header)
+        res_df.to_csv(all_res_path, mode='a',index=False, header=write_header)
         #folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
 
     # calculate average score
