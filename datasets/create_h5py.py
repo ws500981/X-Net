@@ -134,9 +134,9 @@ def check_h5py(h5py_pth, save_pth, check_1st_patient):
     whatevernumber = 0
  
     if check_1st_patient:
-        selected_idx = np.random.choice(lesion.shape[0], 189, replace=False)
-    else:
         selected_idx = list(range(0,189))
+    else:
+        selected_idx = np.random.choice(lesion.shape[0], 189, replace=False)
     for whatevernumber in selected_idx:
         current_img = lesion[whatevernumber]
         current_label = label[whatevernumber]
