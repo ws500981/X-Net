@@ -1,5 +1,21 @@
+import os
 import numpy as np
 
+
+def recursive_mkdir(dir):
+    '''Recursively mkdir. E.g. dir=/a/b/c/d, if only /a/b exists, /a/b/c and /a/b/c/d/ will be created.'''
+
+    if os.path.exists(dir):
+        return 
+
+    path_splitted = os.path.split(os.path.abspath(dir))
+    print('recursive_mkdir',path_splitted)
+
+    if not os.path.exists(path_splitted[0]):
+        recursive_mkdir(path_splitted[0])
+    
+    os.mkdir(dir)
+    print('Create dir: %s'%dir)
 
 def get_score_for_one_patient(labels, predicts, threshold=0.5):
     '''

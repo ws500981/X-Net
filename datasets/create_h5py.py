@@ -11,6 +11,8 @@ import numpy as np
 #from PIL import Image
 import nibabel as nib
 
+from utils import recursive_mkdir
+
 
 
 def save2h5py(ds_pth, h5py_pth):
@@ -150,20 +152,6 @@ def check_h5py(h5py_pth, save_pth):
 
 
 
-def recursive_mkdir(dir):
-    '''Recursively mkdir. E.g. dir=/a/b/c/d, if only /a/b exists, /a/b/c and /a/b/c/d/ will be created.'''
-
-    if os.path.exists(dir):
-        return 
-
-    path_splitted = os.path.split(os.path.abspath(dir))
-    print('recursive_mkdir',path_splitted)
-
-    if not os.path.exists(path_splitted[0]):
-        recursive_mkdir(path_splitted[0])
-    
-    os.mkdir(dir)
-    print('Create dir: %s'%dir)
 
 
 
