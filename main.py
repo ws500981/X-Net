@@ -18,7 +18,7 @@ import argparse
 
 pretrained_weights_file = None
 input_shape = (224, 192, 1)
-batch_size = 8
+batch_size = 16
 num_folds = 3 #TODO
 nepoch = 50
 
