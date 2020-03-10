@@ -12,7 +12,7 @@ from utils import get_score_from_all_slices, recursive_mkdir
 from model import create_xception_unet_n
 from loss import get_loss, dice
 from data import create_train_date_generator, create_val_date_generator
-
+from tensorflow.python.client import device_lib
 import argparse
 
 
@@ -24,6 +24,7 @@ num_folds = 3 #TODO
 
 def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_path):
 
+    print('>>>>>>>>>>>>>Training to be stored in %s'%log_dir)
     num_slices_train = len(train_patient_indexes) * 189
     num_slices_val = len(val_patient_indexes) * 189
 
@@ -81,6 +82,8 @@ def train(log_dir, fold, train_patient_indexes, val_patient_indexes, data_file_p
 
 
 def main(args):
+    print(device_lib.list_local_devices())
+    print('available GPUs:' K.tensorflow_backend._get_available_gpus())
     # create checkpoint
     ck_path = './checkpoints/'+args.exp_nm
     if not os.path.exists(ck_path):
@@ -104,6 +107,7 @@ def main(args):
         res_df = pd.DataFrame.from_dict(fold_mean_score)
         write_header = True if not os.path.exists(all_res_path) else False # write header
         res_df.to_csv(all_res_path, mode='a',index=False, header=write_header)
+        
         #folds_score.append(fold_mean_score) #put mean score for each of the 5 folds in one list
 
     # calculate average score
@@ -147,7 +151,7 @@ def get_split_index_dict():
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     parser = argparse.ArgumentParser(description='X-Net.')
     parser.add_argument('--exp_nm',required=True ,help='experiment name')
     parser.add_argument('--data_file_path', default='/home/wwu009/Project/hd5/normalized_file.h5', help='The path to h5py data file')
